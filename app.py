@@ -1,3 +1,4 @@
+from InquirerPy import inquirer
 import requests
 import json
 import time
@@ -9,7 +10,6 @@ from bs4 import BeautifulSoup
 BASE_URL = "https://fogplay.mts.ru/computer/"
 AUDIO_FILE = "./Kuvaev_1[Master]+вокал13дб.обр.mp3"
 
-# Инициализация звука
 pygame.init()
 pygame.mixer.init()
 
@@ -41,6 +41,7 @@ def extract_play_link(html, target_code):
 
 
 def check_links(data):
+    found_any = False
     for item in data:
         path = item.get("path")
         codes = item.get("code")
@@ -67,17 +68,47 @@ def check_links(data):
                         webbrowser.open(play_url)
                         input("⏸ Нажмите Enter, чтобы остановить звук и продолжить...")
                         pygame.mixer.music.stop()
+                        found_any = True
         except Exception as e:
             print(f"Ошибка при запросе {url}: {e}")
 
+    return found_any
+
+
+def select_data():
+    data = load_json()
+    choices = [item["path"] for item in data]
+    choices.insert(0, "🔎 Проверять все")
+
+    selected = inquirer.select(
+        message="Выберите путь для поиска:",
+        choices=choices,
+        default="🔎 Проверять все",
+    ).execute()
+
+    if selected == "🔎 Проверять все":
+        return data
+    else:
+        return [item for item in data if item["path"] == selected]
+
 
 def main():
+    selected_data = select_data()
+
     while True:
         try:
-            data = load_json()
-            check_links(data)
+            found = check_links(selected_data)
+            if not found:
+                print("\n❌ Ничего не найдено.")
+                choice = input(
+                    "Нажмите Enter, чтобы вернуться к выбору пути, или подождите 60 секунд...\n"
+                )
+                if choice.strip() == "":
+                    selected_data = select_data()
+                    continue
         except Exception as e:
             print(f"Ошибка: {e}")
+
         time.sleep(60)
 
 
