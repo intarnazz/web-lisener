@@ -40,6 +40,23 @@ def extract_play_link(html, target_code):
     return None
 
 
+def save_json(data):
+    with open("data.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+def move_to_top(path):
+    data = load_json()
+    for i, item in enumerate(data):
+        if item.get("path") == path:
+            # Удаляем и вставляем в начало
+            obj = data.pop(i)
+            data.insert(0, obj)
+            save_json(data)
+            print(f"📌 Объект '{path}' перемещён в начало списка.")
+            break
+
+
 def check_links(data):
     found_any = False
     for item in data:
@@ -68,6 +85,7 @@ def check_links(data):
                         webbrowser.open(play_url)
                         input("⏸ Нажмите Enter, чтобы остановить звук и продолжить...")
                         pygame.mixer.music.stop()
+                        move_to_top(path)  # 📌 Перемещаем в начало
                         found_any = True
         except Exception as e:
             print(f"Ошибка при запросе {url}: {e}")
