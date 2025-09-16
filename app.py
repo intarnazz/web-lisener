@@ -4,9 +4,6 @@ import json
 import time
 import pygame
 import webbrowser
-import subprocess
-import shutil
-import sys
 from bs4 import BeautifulSoup
 
 
@@ -60,34 +57,6 @@ def move_to_top(path):
             break
 
 
-def open_in_private(url):
-    """Открывает ссылку в приватном/инкогнито режиме, если доступен браузер."""
-    browsers = [
-        ("chrome", ["--incognito"]),
-        ("google-chrome", ["--incognito"]),
-        ("chromium", ["--incognito"]),
-        ("edge", ["--inprivate"]),
-        ("msedge", ["--inprivate"]),
-        ("firefox", ["--private-window"]),
-    ]
-
-    for browser, args in browsers:
-        path = shutil.which(browser)
-        if path:
-            try:
-                subprocess.Popen([path] + args + [url])
-                print(f"🌐 Открыто в приватном режиме ({browser})")
-                return
-            except Exception as e:
-                print(f"Ошибка запуска {browser}: {e}")
-
-    # fallback — обычный webbrowser
-    import webbrowser
-
-    print("⚠ Не найден подходящий браузер, открываю обычным способом.")
-    webbrowser.open(url)
-
-
 def check_links(data):
     found_any = False
     for item in data:
@@ -113,7 +82,7 @@ def check_links(data):
                         print(f"\n🔔 НАЙДЕНО: {code} на {url}")
                         print(f"▶ Открытие ссылки: {play_url}")
                         play_audio()
-                        open_in_private(play_url)
+                        webbrowser.open(play_url)
                         input("⏸ Нажмите Enter, чтобы остановить звук и продолжить...")
                         pygame.mixer.music.stop()
                         move_to_top(path)  # 📌 Перемещаем в начало
