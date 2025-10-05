@@ -1,45 +1,53 @@
 # main.py
-"""
-Главный модуль приложения:
-- Запускает основной цикл
-- Управляет выбором данных и проверкой ссылок
-"""
 
 import time
-from selector import select_data
-from checker import check_links
+import pygame
+from selector import Selector
+from checker import Checker
 
 
-def main():
+class App:
     """
-    Основной цикл:
-    - пользователь выбирает данные
-    - запускается проверка ссылок
-    - при отсутствии результатов — пауза или возврат к выбору
+    Главный модуль приложения:
+    - Запускает основной цикл
+    - Управляет выбором данных и проверкой ссылок
     """
-    selected_data = select_data()
 
-    while True:
-        try:
-            found = check_links(selected_data)
-            if not found:
-                print("\n❌ Ничего не найдено.")
-                choice = input(
-                    "Нажмите Enter, чтобы вернуться к выбору пути, "
-                    "или подождите 60 секунд...\n"
-                )
-                if choice.strip() == "":
-                    selected_data = select_data()
+    def __init__(self):
+        # Инициализация Pygame
+        pygame.init()
+        pygame.mixer.init()
+
+        self.selector = Selector()
+        self.checker = Checker()
+
+    def main(self):
+        """
+        Основной цикл:
+        - пользователь выбирает данные
+        - запускается проверка ссылок
+        - при отсутствии результатов — пауза или возврат к выбору
+        """
+
+        while True:
+            try:
+                found = self.checker.check(self.selector.select())
+                if not found:
+                    print("\n❌ Ничего не найдено.")
+                    input(
+                        "Нажмите Enter, чтобы вернуться к выбору пути, "
+                        "или подождите 60 секунд...\n"
+                    )
                     continue
-            else:
-                # если найдено — возвращаемся к выбору
-                selected_data = select_data()
-                continue
-        except Exception as e:
-            print(f"Ошибка: {e}")
+                else:
+                    # если найдено — возвращаемся к выбору
+                    continue
+            except Exception as e:
+                print(f"Ошибка: {e}")
 
-        time.sleep(60)
+            time.sleep(10)
 
 
 if __name__ == "__main__":
-    main()
+    app = App()
+    app.main()
