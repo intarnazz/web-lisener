@@ -1,9 +1,7 @@
 # main.py
 
-import time
 import pygame
 from selector import Selector
-from checker import Checker
 
 
 class App:
@@ -19,7 +17,6 @@ class App:
         pygame.mixer.init()
 
         self.selector = Selector()
-        self.checker = Checker()
 
     def main(self):
         """
@@ -30,22 +27,7 @@ class App:
         """
 
         while True:
-            try:
-                found = self.checker.check(self.selector.select())
-                if not found:
-                    print("\n❌ Ничего не найдено.")
-                    input(
-                        "Нажмите Enter, чтобы вернуться к выбору пути, "
-                        "или подождите 60 секунд...\n"
-                    )
-                    continue
-                else:
-                    # если найдено — возвращаемся к выбору
-                    continue
-            except Exception as e:
-                print(f"Ошибка: {e}")
-
-            time.sleep(10)
+            self.selector.run()
 
 
 if __name__ == "__main__":

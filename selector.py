@@ -1,9 +1,10 @@
 # selector.py
 
-import json
+import time
 from InquirerPy import inquirer
 from setings import Setings
 from storage import Storage
+from checker import Checker
 
 
 class Selector:
@@ -16,6 +17,7 @@ class Selector:
     def __init__(self) -> list:
         self.setings = Setings()
         self.storage = Storage()
+        self.checker = Checker()
 
     def select(self) -> list:
         """
@@ -53,3 +55,23 @@ class Selector:
                 self.storage.set(self.setings.COMPUTERS_JSON_FILE, computers)
 
             return [selected_computer] if selected_computer else []
+
+    def run(self) -> list:
+        try:
+            found = self.checker.check(self.select())
+            if not found:
+                print("\n❌ Ничего не найдено.")
+                input(
+                    "Нажмите Enter, чтобы вернуться к выбору пути, "
+                    "или подождите 60 секунд...\n"
+                )
+                return False
+            else:
+                # если найдено — возвращаемся к выбору
+                return False
+        except Exception as e:
+            print(f"Ошибка: {e}")
+
+        time.sleep(10)
+
+        return True
