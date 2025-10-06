@@ -50,7 +50,6 @@ class Selector:
                 computers.insert(0, selected_computer)
 
                 # сохраняем обновлённый порядок
-                with open(self.setings.COMPUTERS_JSON_FILE, "w", encoding="utf-8") as f:
-                    json.dump(computers, f, ensure_ascii=False, indent=2)
+                self.storage.set(self.setings.COMPUTERS_JSON_FILE, computers)
 
             return [selected_computer] if selected_computer else []
