@@ -27,7 +27,6 @@ class Selector:
 
         :return: список выбранных элементов (всегда список, даже если один элемент)
         """
-
         computers = self.storage.get(self.setings.COMPUTERS_JSON_FILE)
 
         choices = [computer["path"] for computer in computers]
@@ -56,7 +55,12 @@ class Selector:
 
             return [selected_computer] if selected_computer else []
 
-    def run(self) -> list:
+    def run(self) -> bool:
+        """
+        Запуск запуск терминала.
+
+        :return: bool
+        """
         try:
             found = self.checker.check(self.select())
             if not found:
@@ -73,5 +77,4 @@ class Selector:
             print(f"Ошибка: {e}")
 
         time.sleep(10)
-
         return True
